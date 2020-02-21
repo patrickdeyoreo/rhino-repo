@@ -5,6 +5,7 @@ Run the project and README scrapers
 import os
 import re
 import sys
+import stat as st
 from . scrapers.high_scraper import HighScraper
 from . scrapers.low_scraper import LowScraper
 from . scrapers.sys_scraper import SysScraper
@@ -17,10 +18,9 @@ def rhinoproject(soup):
     Scrapes project type (low level, high level, or system engineer),
     then it checks project type to execute appropriate scrapes.
     """
-    create_directory(find_directory(soup))
+    mkcd(find_directory(soup))
 
     project_type = project_type_check(soup)
-    print(project_type)
     if "high" in project_type:
         # Creating scraping objects
         high_scraper = HighScraper(soup)
@@ -72,7 +72,7 @@ def find_directory(soup):
     return find_dir_text
 
 
-def create_directory(directory):
+def mkcd(directory):
     """Method that creates appropriate directory"""
     sys.stdout.write("  -> Creating directory... ")
     try:
@@ -98,8 +98,9 @@ def project_type_check(soup):
 def set_permissions():
     """Method that sets permissions on files
     """
-    try:
-        os.system("chmod u+x *")
-        print("done")
-    except OSError:
-        print("[ERROR] Failed to set permissions")
+    perms = st.S_IRWXU | st.S_IRGRP | st.S_IWGRP | st.S_IROTH | st.S_IWOTH
+    for name in os.listdir():
+        try:
+            os.chmod(name, perms)
+        except OSError:
+            pass
