@@ -10,7 +10,7 @@ from api.v1.views import app_views
 
 HOST = getenv('RHINO_API_HOST', '0.0.0.0')
 PORT = getenv('RHINE_API_PORT', '5000')
-cors = CORS(app_views, resources={r"/*": {"origins": HOST}})
+cors = CORS(app_views, resources={r"/*": {"origins": '*'}})
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False

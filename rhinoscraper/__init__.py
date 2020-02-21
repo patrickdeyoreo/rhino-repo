@@ -12,8 +12,8 @@ def create_session(username, password):
     """Log in and return a session
     """
     auth_url = 'https://intranet.hbtn.io/auth/sign_in'
-    with requests.Session() as sess:
-        resp = sess.get(auth_url)
+    with requests.Session() as session:
+        resp = session.get(auth_url)
         soup = BeautifulSoup(resp.content, features='html.parser')
         token = soup.find('input', {'name': 'authenticity_token'})
         commit = soup.find('input', {'name': 'commit'})
@@ -24,13 +24,13 @@ def create_session(username, password):
                 'authenticity_token': token.get('value'),
                 'commit': commit.get('value'),
             }
-            resp = sess.post(auth_url, data=auth_data)
+            resp = session.post(auth_url, data=auth_data)
             if 200 <= resp.status_code < 300:
-                return sess
+                return session
     return None
 
 
-def get_soup(session, project):
+def get_soup(session, project_id):
     """Method that parses the `hbtn_link` with BeautifulSoup
 
     Initially logs in the intranet using mechanize and cookiejar.
@@ -40,7 +40,8 @@ def get_soup(session, project):
         soup (obj): BeautifulSoup parsed html object
     """
     try:
-        resp = session.get(f'https://intranet.hbtn.io/projects/{project}')
+        resp = session.get(
+            'https://intranet.hbtn.io/projects/{}'.format(project_id))
         soup = BeautifulSoup(resp.content, features='html.parser')
         return soup
     except AttributeError:
