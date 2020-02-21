@@ -4,6 +4,8 @@ Provides the rhinoscraper module
 """
 import requests
 from bs4 import BeautifulSoup
+from . rhinoproject import rhinoproject
+from . rhinoread import rhinoread
 
 
 def create_session(username, password):
@@ -44,3 +46,10 @@ def get_soup(session, project):
     except AttributeError:
         print("[ERROR] Login failed (are your credentials correct?")
         return None
+
+
+def rhinoscrape(soup, username, author):
+    """Run the rhino project and rhino read
+    """
+    rhinoproject(soup)
+    rhinoread(soup, username, author)

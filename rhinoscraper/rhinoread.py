@@ -5,7 +5,7 @@ Run the project and README scrapers
 from . scrapers.read_scraper import ReadScraper
 
 
-def rhinoread(soup, author, username):
+def rhinoread(soup, username, author):
     """Entry point for hipporeader
 
     Scrapes for specific text to create a README automatically.
@@ -19,4 +19,5 @@ def rhinoread(soup, author, username):
     r_scraper.write_title()
     r_scraper.write_info()
     r_scraper.write_tasks()
-    r_scraper.write_footer(author, username, f'https://github.com/{username}')
+    r_scraper.write_footer(
+        author, username, 'https://github.com/{}'.format(username))
