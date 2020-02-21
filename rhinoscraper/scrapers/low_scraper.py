@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Module for LowScraper"""
-from scrapers import *
+import os
+import re
+import sys
+import requests
+from bs4 import BeautifulSoup
 
 
 class LowScraper:
@@ -30,7 +34,8 @@ class LowScraper:
         Used for creating holberton's `_putchar` file if required
         """
         sys.stdout.write("  -> Checking for _putchar... ")
-        search_putchar = self.soup.find(string=re.compile("You are allowed to use"))
+        search_putchar = self.soup.find(
+            string=re.compile("You are allowed to use"))
         try:
             if len(search_putchar) == 23:
                 return search_putchar.next_sibling.text
@@ -72,7 +77,8 @@ class LowScraper:
         """Method to scrape for C header file name"""
         try:
             finder = "forget to push your header file"
-            header_text = self.soup.find(string=re.compile(finder)).previous_element
+            header_text = self.soup.find(
+                string=re.compile(finder)).previous_element
             return header_text.previous_element.previous_element
         except AttributeError:
             self.header_check = 1
@@ -102,12 +108,12 @@ class LowScraper:
                 except TypeError:
                     pass
 
-                n = 0
+                index = 0
                 for item in self.prototypes_list:
-                    if n == len(self.prototypes_list):
+                    if index == len(self.prototypes_list):
                         break
-                    w_header.write(self.prototypes_list[n] + ";\n")
-                    n += 1
+                    w_header.write(self.prototypes_list[index] + ";\n")
+                    index += 1
 
                 w_header.write("\n")
                 w_header.write('#endif /* %s */' % include_guard)
@@ -133,7 +139,7 @@ class LowScraper:
             file_text = item.next_sibling.text
             # Breaks incase more function names over file names
             if self.prototypes_list != 0:
-                if (i == len(self.prototypes_list)):
+                if i == len(self.prototypes_list):
                     break
 
             try:
@@ -174,11 +180,13 @@ class LowScraper:
         print("done")
 
     def write_checker(self):
-        with open("check.sh", "w") as f:
-            f.write("#!/usr/bin/env bash\n")
-            f.write("betty ")
+        """Write checker data
+        """
+        with open("check.sh", "w") as ofile:
+            ofile.write("#!/usr/bin/env bash\n")
+            ofile.write("betty ")
             if self.header_name:
-                f.write('"%s" ' % self.header_name)
+                ofile.write('"%s" ' % self.header_name)
             if self.file_names:
                 for i in self.file_names:
-                    f.write('"%s" ' % i.next_sibling.text)
+                    ofile.write('"%s" ' % i.next_sibling.text)

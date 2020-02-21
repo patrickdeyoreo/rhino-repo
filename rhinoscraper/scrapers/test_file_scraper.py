@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Module for TestFileScraper"""
-from scrapers import *
+import os
+import re
+import sys
+import requests
+from bs4 import BeautifulSoup
+
 
 class TestFileScraper:
     """TestFileScraper class
@@ -11,13 +16,19 @@ class TestFileScraper:
         soup (obj): BeautifulSoup obj containing parsed link
     """
     def __init__(self, soup):
+        """Initialize a test file scraper
+        """
         self.soup = soup
         self.pre = self.find_test_files()
 
     def find_test_files(self):
+        """Find test files
+        """
         return self.soup.select("pre")
 
     def write_test_files(self):
+        """Write test files
+        """
         sys.stdout.write("  -> Creating test files... ")
         for item in self.pre:
             find_test = item.text.find("cat")
@@ -28,7 +39,9 @@ class TestFileScraper:
             find_html = item.text.find(".html")
 
             # find_main checks if there are main files on project page
-            if find_test != -1 and (find_c != -1 or find_py != -1 or find_sql != -1 or find_js != -1 or find_html != -1):
+            if find_test != -1 and (
+                    find_c != -1 or find_py != -1 or
+                    find_sql != -1 or find_js != -1 or find_html != -1):
                 try:
                     name = item.text.split("cat ", 1)[1]
                     user = item.text.split("$", 1)[0]
@@ -73,7 +86,8 @@ class TestFileScraper:
                     sys.stdout.write("                        ... ")
                     continue
                 except IOError:
-                    sys.stdout.write("\n     [ERROR] Could not create a specific test file.\n")
+                    sys.stdout.write(
+                        "\n     [ERROR] Could not create a test file.\n")
                     continue
             else:
                 pass

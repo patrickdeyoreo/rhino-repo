@@ -3,11 +3,10 @@
 Returns the status of the API
 """
 
-from models import storage
-from api.v1.views import app_views
+from os import getenv
 from flask import Flask, jsonify, make_response
 from flask_cors import CORS
-from os import getenv
+from api.v1.views import app_views
 
 HOST = getenv('RHINO_API_HOST', '0.0.0.0')
 PORT = getenv('RHINE_API_PORT', '5000')
@@ -23,12 +22,6 @@ app.register_blueprint(app_views)
 def error_404(err):
     """Produce a 404 error message"""
     return make_response(jsonify(error="oops, I did it again..."), 404)
-
-
-@app.teardown_appcontext
-def close_storage(exe):
-    """closes storage"""
-    storage.close()
 
 
 if __name__ == "__main__":

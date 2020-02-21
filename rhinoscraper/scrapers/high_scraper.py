@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Module for HighScraper"""
-from scrapers import *
+import os
+import re
+import sys
 
 
 class HighScraper:
@@ -49,7 +51,6 @@ class HighScraper:
         Has a function that creates directories if found in `file_name`.
         Last function creates required files in additional directory.
         """
-
         new_dir_files = []
         file_idx = 0
         one_dir_check = 0
@@ -68,7 +69,7 @@ class HighScraper:
                 find_dir_file = re.search('/(.+?)$', text_file)
                 if find_dir_file is not None:
                     new_dir_files.append(str(find_dir_file.group(1)))
-                if find_folder is not None and one_dir_check is 0:
+                if find_folder is not None and one_dir_check == 0:
                     folder_name = str(find_folder.group(1))
                     os.mkdir(folder_name)
                     one_dir_check += 1
@@ -78,7 +79,7 @@ class HighScraper:
                     create_name = str(find_comma.group(1))
                     make_comma = open(create_name, "w+")
                     make_comma.close()
-                elif "." not in text_file and one_dir_check is not 1:
+                elif "." not in text_file and one_dir_check != 1:
                     os.mkdir(text_file)
                 else:
                     w_file_name = open(text_file, "w+")
@@ -107,12 +108,11 @@ class HighScraper:
             except IOError:
                 sys.stdout.write("[ERROR] Failed to make file, passing\n")
                 sys.stdout.write("                        ... ")
-                pass
             except IndexError:
                 pass
 
         # Check if new dir created, insert files if there is
-        if folder_name is not None and one_dir_check is 1:
+        if folder_name is not None and one_dir_check == 1:
             os.chdir(folder_name)
             for item in new_dir_files:
                 if "," in item:
@@ -124,12 +124,14 @@ class HighScraper:
         print("done")
 
     def write_checker(self):
-        with open("check.sh", "w") as f:
-            f.write("#!/usr/bin/env bash\n")
+        """Write checker data
+        """
+        with open("check.sh", "w") as ofile:
+            ofile.write("#!/usr/bin/env bash\n")
             if self.js_flag == 1:
-                f.write("semistandard --fix ")
+                ofile.write("semistandard --fix ")
             if self.py_flag == 1:
-                f.write("pep8 ")
+                ofile.write("pep8 ")
             if self.file_names:
                 for i in self.file_names:
-                    f.write('"%s" ' % i.next_sibling.text)
+                    ofile.write('"%s" ' % i.next_sibling.text)

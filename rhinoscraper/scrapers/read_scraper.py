@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Module for ReadScraper"""
-from scrapers import *
-from bs4 import Comment
+import os
+import re
+import sys
+import requests
+from bs4 import BeautifulSoup, Comment
 
 
 class ReadScraper:
@@ -45,13 +48,11 @@ class ReadScraper:
         """Method that checks if project is a big one"""
         try:
             tmp = self.repo_name.find_next("li").next_element.next_element.text
-            if "-" not in temp:
-                raise AttributeError
-            else:
+            if "-" in tmp:
                 return tmp
+            raise AttributeError
         except AttributeError:
-            sys.stdout.write("\n     [ERROR] Failed to find directory,\
-                             skipping directory creation... ")
+            sys.stdout.write("\n[ERROR] Failed to find project directory")
             self.big_project_type = 1
             return ""
 
@@ -103,8 +104,8 @@ class ReadScraper:
         """Method that finds the task descriptions"""
         temp = []
         try:
-            info_list = self.soup.find_all(string=lambda text: isinstance
-                                           (text, Comment))
+            info_list = self.soup.find_all(
+                string=lambda text: isinstance(text, Comment))
             for comments in info_list:
                 if comments == " Task Body ":
                     info_text = comments.next_element.next_element.text
@@ -146,26 +147,26 @@ class ReadScraper:
             print("done")
         except (AttributeError, IndexError, UnicodeEncodeError):
             print("\n     [ERROR] Failed to write learning objectives.")
-            pass
         self.readme.write("\n")
         self.readme.write("---\n")
 
     def write_tasks(self):
         """Method that writes the entire tasks to README.md"""
         if (self.task_names is not None and self.file_names is not None and
-            self.task_info is not None):
+                self.task_info is not None):
             sys.stdout.write("  -> Writing task information... ")
             count = 0
             while count < len(self.task_names):
                 try:
                     self.readme.write("\n")
-                    self.readme.write("### [{}](./{})\n".format(
-                                      self.task_names[count], self.file_names[count]))
+                    self.readme.write(
+                        "### [{}](./{})\n".format(
+                            self.task_names[count], self.file_names[count]))
                     self.readme.write("* {}\n".format(self.task_info[count]))
                     self.readme.write("\n")
                     count += 1
                 except IndexError:
-                    sys.stdout.write("\n     [ERROR] Could not write task {}... "
+                    sys.stdout.write("\n     [ERROR] Could not write task {}."
                                      .format(self.task_names[count]))
                     count += 1
                     continue
