@@ -1,0 +1,300 @@
+html{
+    background-color: #020621;
+    font-family: Optima;
+}
+#rhino_title {
+    color:white;
+    font-size: 35px;
+    float: left;
+    position: relative;
+    left: 40px;
+    bottom: 30px;
+
+}
+
+.rhino {
+    float: left;
+    position: relative;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+}
+
+.main_title {
+    background-color: #020621;
+    height: 60px;
+    border-bottom: white solid 3px;
+}
+
+#hbnb_title {
+    color: white;
+    font-size: 40px;
+    position: relative;
+    right: 50px;
+
+}
+
+
+
+.main_body {
+    height: 80vh;
+    width: 80vw;
+    position: relative;
+    border: white dotted 5px;
+    margin: auto;
+    top: 30px;
+    border-radius: 25px;
+
+}
+
+#welcome {
+    color: white;
+    font-size: 50px;
+    text-align: center;
+    position: relative;
+    top: 40px;
+}
+
+#sub {
+    color: white;
+    font-size: 30px;
+    text-align: center;
+}
+
+.start {
+    position: relative;
+    left: 37%;
+    top: 60px;
+    margin: auto;
+    text-align: center;
+    border-radius: 4px;
+    background-color: #7e1f02;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 28px;
+    padding: 20px;
+    width: 300px;
+    cursor: pointer;
+    border: none;
+    font-family:Optima;
+
+  }
+
+  .start span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+
+  }
+
+  .start span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+  }
+
+  .start:hover span {
+    padding-right: 25px;
+  }
+
+  .start:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+
+
+  #hbnb_id {
+    position: relative;
+    left: 180px;
+
+    }
+
+  #hbnb_id_in {
+      position: relative;
+      left: 231px;
+      bottom: 5px;
+  }
+
+
+  #hbnb_pwd{
+    position: relative;
+    left: 110px;
+
+}
+
+  #hbnb_pwd_in{
+      position: relative;
+      left: 160px;
+      bottom: 5px;
+}
+
+  #hbnb_api{
+    position: relative;
+    left: 170px;
+  }
+
+  #hbnb_api_in{
+    position: relative;
+    left: 221px;
+    bottom: 5px;
+  }
+
+  #hbnb_pro{
+    position: relative;
+    left: 35px;
+  }
+
+  #hbnb_pro_in{
+    position: relative;
+    left: 85px;
+    bottom: 5px;
+  }
+
+  label{
+      color: white;
+      font-family: Optima;
+      font-size: 25px;
+  }
+
+  #hbnb_form{
+      position: relative;
+      left: 70px;
+  }
+
+  .br{
+      height: 40px;
+  }
+
+
+  input {
+      height: 30px;
+      width: 300px;
+      border-radius: 5px;
+  }
+
+  input[type="text"]
+{
+    font-size:24px;
+    font-family: Optima;
+    padding-left: 10px;
+}
+  input[type="password"]
+{
+    font-size:24px;
+    font-family: Optima;
+    padding-left: 10px;
+}
+
+
+.next {
+    position: relative;
+    top: 60px;
+    float: right;
+    right: 60px;
+    border-radius: 4px;
+    background-color: #7e1f02;
+    color: #FFFFFF;
+    font-size: 28px;
+    padding: 20px;
+    width: 200px;
+    height: 50px;
+    cursor: pointer;
+    border: none;
+    font-family:Optima;
+
+  }
+
+  .next span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    bottom: 10px;
+
+  }
+
+  .next span:after {
+    content: '\00bb';
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+  }
+
+  .next:hover span {
+    padding-right: 25px;
+  }
+
+  .next:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+
+  #git_title {
+    color: white;
+    font-size: 35px;
+    position: relative;
+    top: 120px;
+
+}
+
+  #git_pwd_in {
+      position: relative;
+      top: 100px;
+      left: 300px;
+      height: 50px;
+      width: 400px;
+  }
+
+
+  .submit {
+    position: relative;
+    left: 37%;
+    top: 300px;
+    margin: auto;
+    text-align: center;
+    border-radius: 4px;
+    background-color: #7e1f02;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 28px;
+    padding: 20px;
+    width: 200px;
+    height: 70px;
+    cursor: pointer;
+    border: none;
+    font-family:Optima;
+
+  }
+
+  .submit span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    bottom: 1px;
+  }
+
+  .submit span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+  }
+
+  .submit:hover span {
+    padding-right: 25px;
+  }
+
+  .submit:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+
+  #done{
+      position:relative;
+      top: 20px;
+  }
