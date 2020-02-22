@@ -12,7 +12,7 @@ port = 5001
 host = '0.0.0.0'
 
 
-@app.route('/index/')
+@app.route('/')
 def index():
     """
     handles request to custom template
