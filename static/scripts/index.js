@@ -2,15 +2,15 @@ $(document).ready(function () {
     $('button.btn_submit').click(function () {
         $.ajax(
             {
-                url: `http://0.0.0.0:5000/api/v1/${ $('#hbnb_pro_in').val() }`,
+                url: `http://0.0.0.0:5000/api/v1/${$('#hb_proj').val()}`,
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
                 data: JSON.stringify({
-                    holberton_user: $('hbnb_id_in').val(),
-                    holberton_pass: $('hbnb_pwd_in').val(),
-                    holberton_api_key: $('hbnb_api_in').val(),
-                    github_pass: $('git_pwd_in').val(),
+                    holberton_user: $('#hb_id').val(),
+                    holberton_pass: $('#hb_pwd').val(),
+                    holberton_api_key: $('#api_id').val(),
+                    github_pass: $('#g_pwd').val(),
                 }),
                 success: function (response) {
                     window.location.href = "/done/" + response.body;

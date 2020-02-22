@@ -3,6 +3,7 @@
 Provides RESTful API routes for Holberton
 """
 from os import chdir, getcwd, path
+from re import match
 from requests import get, post
 from shlex import quote, split
 from shutil import rmtree
@@ -33,10 +34,18 @@ def holberton_project(project_id):
     print(data.keys())
     if AUTH_KEYS < data.keys():
         abort(400)
+    data['holberton_user'] = match(r'^\d+', data['holberton_user'])
+    if data['holberton_user'] is None:
+        abort(400)
+    data['holberton_user'] = '@'.join([
+        data['holberton_user'].string,
+        'holbertonschool.com'
+    ])
     auth_token = holberton_auth_token(
         data['holberton_user'],
         data['holberton_pass'],
-        data['holberton_api_key'])
+        data['holberton_api_key']
+    )
     user_info = holberton_user_info(auth_token)
     project_info = holberton_project_info(project_id, auth_token)
     project_name = project_info['name']
