@@ -3,6 +3,7 @@
 Provides RESTful API routes for Holberton
 """
 from os import chdir, getcwd, path
+from requests import get, post
 from shlex import quote, split
 from shutil import rmtree
 from subprocess import run
@@ -29,7 +30,8 @@ def holberton_project(project_id):
     github_pass
     """
     data = request.get_json()
-    if AUTH_KEYS <= data.keys():
+    print(data.keys())
+    if AUTH_KEYS < data.keys():
         abort(400)
     auth_token = holberton_auth_token(
         data['holberton_user'],
@@ -83,23 +85,23 @@ def holberton_auth_token(holberton_user, holberton_pass, holberton_api_key):
         'password': holberton_pass,
         'scope': 'checker'
     }
-    resp = request.post(url, params=params)
+    resp = post(url, params=params)
     return resp.json().get('auth_token')
 
 
 def holberton_user_info(auth_token):
     """Get holberton project info
     """
-    url = 'https://intranet.hbtn.io/users/users/me.json'
+    url = 'https://intranet.hbtn.io/users/me.json'
     params = {'auth_token': auth_token}
-    resp = request.get(url, params=params)
+    resp = get(url, params=params)
     return resp.json()
 
 
 def holberton_project_info(project_id, auth_token):
     """Get holberton project info
     """
-    url = 'https://intranet.hbtn.io/users/projects/{}.json'.format(project_id)
+    url = 'https://intranet.hbtn.io/projects/{}.json'.format(project_id)
     params = {'auth_token': auth_token, 'id': project_id}
-    resp = request.get(url, params=params)
+    resp = get(url, params=params)
     return resp.json()
