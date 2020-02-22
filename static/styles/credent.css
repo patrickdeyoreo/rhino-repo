@@ -52,14 +52,21 @@ label{
     margin-bottom: 10px;
 }
 
+#api_id {
+    position: relative;
+    bottom: 40px;
+}
+
 .hbnb_id {
     margin-left: 46px;
 }
 
 #hb_id {
-    position: relative;
-    bottom: 4px;
-    margin-bottom: 10px;
+    width: 368px;
+}
+
+#hb_pwd {
+    width: 368px;
 }
 .hbnb_api {
     margin-left: 35px;
@@ -72,6 +79,15 @@ label{
     margin-left: 10px;
 }
 
+#hb_proj {
+    position: relative;
+    bottom: 10px;
+    width: 368px;
+}
+
+#g_pwd {
+    width: 368px;
+}
 .submit{
     float: right;
     position: relative;
