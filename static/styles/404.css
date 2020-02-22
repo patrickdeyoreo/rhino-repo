@@ -1,0 +1,32 @@
+.jumbotron {
+    background-image: url("../images/404.png");
+    background-size: cover;
+    height: 120vh;
+    border-radius: 0px;
+
+}
+
+
+
+.navbar {
+    background-color: black;
+}
+
+.navbar-brand {
+    color: orange;
+    font-size: 25px;
+    font-weight: 200;
+}
+
+.navbar-brand:hover{
+    color: orange;
+
+}
+
+.icon {
+    height:40px;
+    position: relative;
+    bottom: 3px;
+    padding-right: 10px;
+}
+

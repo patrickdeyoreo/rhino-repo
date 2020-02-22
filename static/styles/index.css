@@ -1,0 +1,77 @@
+.jumbotron {
+    background-image: url("../images/rhino.jpg");
+    background-size: cover;
+    height: 120vh;
+    border-radius: 0px;
+
+}
+
+
+.navbar {
+    background-color: black;
+}
+
+.navbar-brand {
+    color: orange;
+    font-size: 25px;
+    font-weight: 200;
+}
+
+.navbar-brand:hover{
+    color: orange;
+
+}
+
+.icon {
+    height:40px;
+    position: relative;
+    bottom: 3px;
+    padding-right: 10px;
+}
+
+.done_sub{
+    font-size: 25px;
+    margin-bottom: 5px;
+    font-weight: 200;
+}
+
+.welcome {
+    font-weight: 200;
+    font-size: 60px;
+    margin-top: -20px;
+}
+
+.welcome_sub {
+    margin-top: 20px;
+    font-weight: 200;
+    font-size: 30px;
+}
+
+.start {
+    position: relative;
+    background-color:black;
+    border: none;
+    color: orange;
+    font-weight: 200;
+    width: 250px;
+    top: 30px;
+}
+
+.start:hover {
+    background-color:white;
+    color: #FF8000;
+}
+
+.pull {
+    font-weight: 400;
+}
+
+.git_link {
+    color: black;
+    font-weight: 300;
+}
+
+.git_link:hover {
+    color: white;
+    text-decoration: none;
+}
