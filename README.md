@@ -43,8 +43,8 @@ on the commandline does not always translate
 * **Akeem Seymens** - Technical Writer - [akeemseymens](https://github.com/akeemseymens)
 * **Diva Lei** - Front-End  - [lei-diva](https://github.com/lei-diva)
 * **Marco Chan** - Back-End - [inspiredtolive](https://github.com/inspiredtolive)
-* **Minh-Huy Vu  ** - Contributor - [miuywu](https://github.com/miuywu)
-* **Patrick DeYoreo - Back-End - [patrickdeyoreo](https://github.com/patrickdeyoreo)
+* **Minh-Huy Vu** - Contributor - [miuywu](https://github.com/miuywu)
+* **Patrick DeYoreo** - Back-End - [patrickdeyoreo](https://github.com/patrickdeyoreo)
 * **Pierre Beaujuge** - Front-End - [PierreBeaujuge](https://github.com/pierreBeaujuge)
 * **Rashaad Colbert** - Attendee - [PurpleBooth](https://github.com/PurpleBooth)
 
