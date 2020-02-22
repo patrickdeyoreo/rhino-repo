@@ -73,7 +73,7 @@ label{
 }
 
 .hbnb_pwd {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 .git_pwd {
     margin-left: 10px;
@@ -81,7 +81,7 @@ label{
 
 #hb_proj {
     position: relative;
-    bottom: 10px;
+    bottom: 7px;
     width: 368px;
 }
 

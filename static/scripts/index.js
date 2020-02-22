@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    $('.navbar-brand').click(function(){
+        document.location.href = 'index.html'
+        });
+
     $('button.btn_submit').click(function () {
         $.ajax(
             {
