@@ -28,6 +28,11 @@
     bottom: 3px;
     padding-right: 10px;
 }
+.done{
+    color:white;
+    position: relative;
+    bottom: 20px;
+}
 
 .done_sub{
     font-size: 25px;
