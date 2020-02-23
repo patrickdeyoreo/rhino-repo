@@ -1,23 +1,34 @@
 #!/usr/bin/env python3
 """
-Run the project and README scrapers
+Provides a class to scrape project data and produce a README
 """
 from . scrapers.read_scraper import ReadScraper
 
 
-def rhinoread(soup, username, author):
-    """Entry point for hipporeader
-
-    Scrapes for specific text to create a README automatically.
+class RhinoRead(ReadScraper):
     """
+    Definition of a class to scrape project data and create project files
+    """
+    def __init__(self, soup, user, name):
+        """
+        Instantiate a RhinoRead object
+        """
+        super().__init__(soup)
+        if not isinstance(user, str):
+            raise TypeError("'user' must be a 'str'")
+        if not isinstance(name, str):
+            raise TypeError("'name' must be a 'str'")
+        self.user = user
+        self.name = name
 
-    # Creating scraping object
-    r_scraper = ReadScraper(soup)
-
-    # Writing to README.md with scraped data
-    r_scraper.open_readme()
-    r_scraper.write_title()
-    r_scraper.write_info()
-    r_scraper.write_tasks()
-    r_scraper.write_footer(
-        author, username, 'https://github.com/{}'.format(username))
+    def run(self):
+        """
+        Scrape project data and create a README
+        """
+        # Write README.md with scraped data
+        self.open_readme()
+        self.write_title()
+        self.write_info()
+        self.write_tasks()
+        profile = 'https://github.com/{}'.format(self.user)
+        self.write_footer(self.name, self.user, profile)

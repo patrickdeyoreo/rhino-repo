@@ -1,192 +1,180 @@
 #!/usr/bin/env python3
-"""Module for LowScraper"""
-import os
+"""
+Provides a class for scraping low-level projects
+"""
 import re
-import sys
-import requests
 from bs4 import BeautifulSoup
+
+PUTCHAR = """
+#include <unistd.h>
+
+/**
+ * _putchar - writes a character to stdout
+ * @c: the character to print
+ *
+ * Return: On success, 1 is returned.
+ * On error, -1 is returned, and errno is set appropriately.
+ */
+int _putchar(char c)
+{
+\treturn (write(1, &c, 1));
+}
+"""
 
 
 class LowScraper:
-    """LowParse class
-
-    Low-Level_Programming project scraper.
-
-    Args:
-        soup (obj): BeautifulSoup obj containing parsed link
-
-    Attributes:
-        header_check (int): if 0, there is header. if 1, there is no header
     """
-    header_check = 0
+    Low-Level_Programming project scraper.
+    Public instance methods:
+        detect_putchar
+        scrape_prototypes
+        scrape_header
+        write_putchar
+        write_header
+        write_files
 
-    def __init__(self, soup):
-        """Instantiation of LowScraper"""
-        self.soup = soup
-        self.putchar_check = self.find_putchar()
-        self.prototypes_list = self.find_prototypes()
-        self.header_name = self.find_header()
-        self.file_names = self.find_files()
-
-    def find_putchar(self):
-        """Method to scrape holberton's `_putchar`
-
-        Used for creating holberton's `_putchar` file if required
+    Public instance attributes:
+        putchar_required: bool: requires custom '_putchar.c'
+        header: str: C header content
+        prototypes: list: function prototypes
+        files: list: project files
+    """
+    def __init__(self, soup: BeautifulSoup):
         """
-        sys.stdout.write("  -> Checking for _putchar... ")
-        search_putchar = self.soup.find(
-            string=re.compile("You are allowed to use"))
+        Instantiate a LowScraper with a BeautifulSoup object
+        Args:
+            soup: BeautifulSoup: Parsed HTML from a Holberton project
+        """
+        if not isinstance(soup, BeautifulSoup):
+            raise TypeError("'soup' must be a 'BeautifulSoup'")
+        self.soup = soup
+        self.detect_putchar()
+        self.scrape_header()
+        self.scrape_prototypes()
+        self.scrape_files()
+
+    def detect_putchar(self):
+        """
+        Check if custom '_putchar' is required
+        Returns
+        """
+        print("> Checking if a custom '_putchar' is required...")
+        regex = re.compile(r'^you\s+are\s+allowedn\s+to\s+use\b', flags=re.I)
+        match = self.soup.find(string=regex)
         try:
-            if len(search_putchar) == 23:
-                return search_putchar.next_sibling.text
-        except TypeError:
-            return None
+            value = len(match) == 23 and match.next_sibling.text == '_putchar'
+        except (TypeError, ValueError):
+            value = False
+        self.putchar_required = value
+        return self.putchar_required
+
+    def scrape_header(self):
+        """
+        Scrape C header file name
+        """
+        try:
+            regex = re.compile(r"\bforget\s+to\s+push\s+your\s+header\s+file\b")
+            match = self.soup.find(string=regex)
+            value = match.previous_element.previous_element.previous_element
+        except AttributeError:
+            value = None
+        self.header = value
+        return self.header
+
+    def scrape_prototypes(self):
+        """
+        Scrape C prototypes
+        """
+        regex = re.compile(r"\bprototype:\s", flags=re.IGNORECASE)
+        if self.putchar_required:
+            self.prototypes = ['int _putchar(char c)']
+        else:
+            self.prototypes = []
+        self.prototypes.extend([element.next_sibling.text.replace(";", "") for
+                                element in self.soup.find_all(string=regex)])
+        return self.prototypes
+
+    def scrape_files(self):
+        """Method to scrape for C file names"""
+        self.files = self.soup.find_all(string=re.compile("File: "))
+        return self.files
 
     def write_putchar(self):
-        """Method to write/create holberton's `_putchar` if required"""
-        if self.putchar_check == "_putchar":
-            w_putchar = open("_putchar.c", "w+")
-            w_putchar.write("#include <unistd.h>\n")
-            w_putchar.write("\n")
-            w_putchar.write("/**\n")
-            w_putchar.write(" * _putchar - writes the character c to stdout\n")
-            w_putchar.write(" * @c: The character to print\n")
-            w_putchar.write(" *\n")
-            w_putchar.write(" * Return: On success 1.\n")
-            w_putchar.write(" * On error, -1 is returned, and errno")
-            w_putchar.write(" is set appropriately.\n")
-            w_putchar.write(" */\n")
-            w_putchar.write("int _putchar(char c)\n")
-            w_putchar.write("{\n")
-            w_putchar.write("       return (write(1, &c, 1));\n")
-            w_putchar.write("}")
-            w_putchar.close()
-            print("created")
-        else:
-            print("not created")
-
-    def find_prototypes(self):
-        """Method to scrape for C prototypes"""
-        temp = []
-        find_protos = self.soup.find_all(string=re.compile("Prototype: "))
-        for item in find_protos:
-            temp.append(item.next_sibling.text.replace(";", ""))
-        return temp
-
-    def find_header(self):
-        """Method to scrape for C header file name"""
-        try:
-            finder = "forget to push your header file"
-            header_text = self.soup.find(
-                string=re.compile(finder)).previous_element
-            return header_text.previous_element.previous_element
-        except AttributeError:
-            self.header_check = 1
-            return ""
+        """
+        Write '_putchar' if required
+        """
+        if self.putchar_required:
+            print("> Writing '_putchar.c'...")
+            try:
+                with open('_putchar.c', 'w') as ostream:
+                    print(PUTCHAR.strip(), file=ostream)
+            except OSError:
+                pass
 
     def write_header(self):
-        """Method to write/create C header file if required"""
-        if self.header_check == 0:
-            # Making header include guard string
-            include_guard = self.header_name
-            include_guard = include_guard.replace('.', '_', 1)
-            include_guard = include_guard.upper()
-
-            sys.stdout.write("  -> Creating header file... ")
+        """
+        Write C header file (if required)
+        """
+        if self.header:
+            print("> Creating header file... ")
             try:
-                w_header = open(self.header_name, "w+")
-                w_header.write('#ifndef %s\n' % include_guard)
-                w_header.write('#define %s\n' % include_guard)
-                w_header.write("\n")
-                w_header.write("#include <stdio.h>\n")
-                w_header.write("#include <stdlib.h>\n")
-                w_header.write("\n")
-
-                try:
-                    if self.putchar_check == "_putchar":
-                        w_header.write("int _putchar(char c);\n")
-                except TypeError:
-                    pass
-
-                index = 0
-                for item in self.prototypes_list:
-                    if index == len(self.prototypes_list):
-                        break
-                    w_header.write(self.prototypes_list[index] + ";\n")
-                    index += 1
-
-                w_header.write("\n")
-                w_header.write('#endif /* %s */' % include_guard)
-                w_header.close()
-                print("done")
-            except AttributeError:
+                include_guard = self.header.replace('.', '_', 1).upper()
+                prototypes = ['{};'.format(s) for s in self.prototypes]
+                with open(self.header, 'w') as ostream:
+                    print('#ifndef {}'.format(include_guard), file=ostream)
+                    print('#define {}'.format(include_guard), file=ostream)
+                    print('', file=ostream)
+                    print('#include <stdio.h>', file=ostream)
+                    print('#include <stdlib.h>', file=ostream)
+                    print('', file=ostream)
+                    print(*prototypes, sep='\n', file=ostream)
+                    print('', file=ostream)
+                    print('#endif /* {} */'.format(include_guard), file=ostream)
+            except (AttributeError, OSError):
                 print("[ERROR] Failed to create header file")
-        else:
-            pass
-
-    def find_files(self):
-        """Method to scrape for C file names"""
-        return self.soup.find_all(string=re.compile("File: "))
 
     def write_files(self):
-        """Method to write/create C files
-
+        """
+        Write project files
         Handles multiple file names by searching for ','.
         """
-        i = 0
-        sys.stdout.write("  -> Creating task files... ")
-        for item in self.file_names:
-            file_text = item.next_sibling.text
-            # Breaks incase more function names over file names
-            if self.prototypes_list != 0:
-                if i == len(self.prototypes_list):
-                    break
-
+        self.write_header()
+        self.write_putchar()
+        print("> Creating task files...")
+        for element, prototype in zip(self.files, self.prototypes):
             try:
-                # Pulling out name of function for documentation
-                if self.prototypes_list != 0:
-                    func_name = self.prototypes_list[i]
-                    func_name = func_name.split("(", 1)[0]
-                    tmp_split = func_name.split(" ")
-                    func_name = tmp_split[len(tmp_split) - 1]
-                    tmp_split = func_name.split("*")
-                    func_name = tmp_split[len(tmp_split) - 1]
-
-                # Removing string after first comma (multiple file names)
-                find_comma = file_text.find(",")
-                if find_comma != -1:
-                    w_file_name = open(file_text[:find_comma], "w+")
-                else:
-                    w_file_name = open(file_text, "w+")
-
-                if self.header_check != 1:
-                    w_file_name.write('#include "%s"\n\n' % self.header_name)
-                    w_file_name.write("/**\n")
-                    w_file_name.write(" * %s -\n" % func_name)
-                    w_file_name.write(" *\n")
-                    w_file_name.write(" * Return: \n")
-                    w_file_name.write(" */\n")
-                    w_file_name.write("%s\n" % self.prototypes_list[i])
-                    w_file_name.write("{\n")
-                    w_file_name.write("\n")
-                    w_file_name.write("}")
-                    w_file_name.close()
-                i += 1
-            except (AttributeError, IndexError):
-                sys.stdout.write("[ERROR] Failed to create ")
-                sys.stdout.write("task file %s\n" % file_text)
-                sys.stdout.write("                        ... ")
-                continue
-        print("done")
+                filename = element.next_sibling.text.split(",")[0]
+                funcname = prototype.split("(", maxsplit=1)[0].split(" ")
+                funcname = funcname[len(funcname)-1].split("*")
+                funcname = funcname[len(funcname)-1]
+                if self.header is not None:
+                    with open(filename, 'w') as ostream:
+                        print('#include', self.header, file=ostream)
+                        print('', file=ostream)
+                        print('/**', file=ostream)
+                        print(' *', funcname, '-', file=ostream)
+                        print(' *', file=ostream)
+                        print(' * Return:', file=ostream)
+                        print(' */', file=ostream)
+                        print(prototype, file=ostream)
+                        print('{', file=ostream)
+                        print('', file=ostream)
+                        print('}', file=ostream)
+            except (AttributeError, OSError):
+                print("[ERROR] Failed to create task file", filename)
 
     def write_checker(self):
-        """Write checker data
         """
-        with open("check.sh", "w") as ofile:
-            ofile.write("#!/usr/bin/env bash\n")
-            ofile.write("betty ")
-            if self.header_name:
-                ofile.write('"%s" ' % self.header_name)
-            if self.file_names:
-                for i in self.file_names:
-                    ofile.write('"%s" ' % i.next_sibling.text)
+        Write betty style checker
+        """
+        try:
+            line = ['betty']
+            if self.header:
+                line.append(self.header)
+            if self.files:
+                line.extend([item.next_sibling.text for item in self.files])
+            with open('check.sh', 'w') as ostream:
+                print('#!/usr/bin/env bash', file=ostream)
+                print(*line, file=ostream)
+        except (OSError, TypeError, ValueError):
+            pass

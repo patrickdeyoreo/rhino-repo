@@ -1,106 +1,81 @@
 #!/usr/bin/env python3
 """
-Run the project and README scrapers
+Provides a class to scrape project data and create project files
 """
 import os
 import re
-import sys
 import stat as st
+from bs4 import BeautifulSoup
 from . scrapers.high_scraper import HighScraper
 from . scrapers.low_scraper import LowScraper
 from . scrapers.sys_scraper import SysScraper
 from . scrapers.test_file_scraper import TestFileScraper
 
 
-def rhinoproject(soup):
-    """Run the scrapers
 
-    Scrapes project type (low level, high level, or system engineer),
-    then it checks project type to execute appropriate scrapes.
+class RhinoProject:
     """
-    mkcd(find_directory(soup))
-
-    project_type = project_type_check(soup)
-    if "high" in project_type:
-        # Creating scraping objects
-        high_scraper = HighScraper(soup)
-        test_scraper = TestFileScraper(soup)
-
-        # Writing to files with scraped data
-        high_scraper.write_files()
-
-        # Creating test (main) files
-        test_scraper.write_test_files()
-
-    elif "low" in project_type:
-        # Creating scraping objects
-        low_scraper = LowScraper(soup)
-        test_scraper = TestFileScraper(soup)
-
-        # Writing to files with scraped data
-        low_scraper.write_putchar()
-        low_scraper.write_header()
-        low_scraper.write_files()
-
-        # Creating test (main) files
-        test_scraper.write_test_files()
-
-    elif "system" in project_type:
-        # Creating scraping objects
-        sys_scraper = SysScraper(soup)
-        test_scraper = TestFileScraper(soup)
-
-        # Creating test (main) files
-        test_scraper.write_test_files()
-
-        # Writing to files with scraped data
-        sys_scraper.write_files()
-
-    else:
-        print("[ERROR]: Could not determine project type")
-
-    set_permissions()
-
-
-def find_directory(soup):
-    """Method that scrapes for project's directory name
-
-    Sets project's directory's name to `dir_name`
+    Definition of a class to scrape project data and create project files
     """
-    find_dir = soup.find(string=re.compile("Directory: "))
-    find_dir_text = find_dir.next_element.text
-    return find_dir_text
+    def __init__(self, soup):
+        """
+        Instantiate a RhinoProject with a BeautifulSoup object
+        """
+        if not isinstance(soup, BeautifulSoup):
+            raise TypeError("'soup' must be a 'BeautifulSoup'")
+        self.soup = soup
+        self.project_name = self.scrape_name()
+        self.project_type = self.scrape_type()
 
+    def scrape_name(self):
+        """
+        Scrape the project directory name by locating 'Directory:'
+        Return the project directory name
+        """
+        pattern = re.compile(r'^directory:\s+', flags=re.I)
+        element = self.soup.find(string=pattern)
+        if element is None:
+            raise ValueError('Unable to determine project name')
+        return element.next_element.text
 
-def mkcd(directory):
-    """Method that creates appropriate directory"""
-    sys.stdout.write("  -> Creating directory... ")
-    try:
-        os.mkdir(directory)
-        os.chdir(directory)
-    except OSError:
-        print("[ERROR] Failed to create directory")
+    def scrape_type(self):
+        """
+        Scrape the project type by locating 'GitHub repository:'
+        Return the project type
+        """
+        pattern = re.compile(r'^github\s+repository:\s+', flags=re.I)
+        element = self.soup.find(string=pattern)
+        if element is None:
+            raise ValueError('Unable to determine project type')
+        return element.next_sibling.text
 
-
-def project_type_check(soup):
-    """Method that checks the project's type
-
-    Checks for which scraper to use by scraping 'Github repository: '
-
-    Returns:
-        project (str): scraped project type
-    """
-    find_project = soup.find(string=re.compile("GitHub repository: "))
-    project = find_project.next_sibling.text
-    return project
-
-
-def set_permissions():
-    """Method that sets permissions on files
-    """
-    perms = st.S_IRWXU | st.S_IRGRP | st.S_IWGRP | st.S_IROTH | st.S_IWOTH
-    for name in os.listdir():
+    def run(self):
+        """
+        Scrape project data based on the project type and write project files
+        Return an absolute path to the project directory
+        """
+        oldcwd = os.getcwd()
+        os.mkdir(self.project_name)
+        os.chdir(self.project_name)
         try:
-            os.chmod(name, perms)
-        except OSError:
-            pass
+            if re.match(r'\bhigh\b', self.project_type, flags=re.I):
+                task_scraper = HighScraper(self.soup)
+            elif re.match(r'\blow\b', self.project_type, flags=re.I):
+                task_scraper = LowScraper(self.soup)
+            elif re.match(r'\bsystem\b', self.project_type, flags=re.I):
+                task_scraper = SysScraper(self.soup)
+            else:
+                raise ValueError("Project type must be high, low or system")
+            test_scraper = TestFileScraper(self.soup)
+            task_scraper.write_files()
+            test_scraper.write_test_files()
+            for name in os.listdir():
+                try:
+                    os.chmod(name, st.S_IRWXU | st.S_IRGRP | st.S_IROTH)
+                except OSError:
+                    pass
+        except Exception:
+            os.chdir(oldcwd)
+            raise
+        else:
+            os.chdir(oldcwd)
