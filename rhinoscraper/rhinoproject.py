@@ -4,13 +4,14 @@ Provides a class to scrape project data and create project files
 """
 import os
 import re
-import stat as st
+import shutil
+import stat
+import sys
 from bs4 import BeautifulSoup
 from . scrapers.high_scraper import HighScraper
 from . scrapers.low_scraper import LowScraper
 from . scrapers.sys_scraper import SysScraper
 from . scrapers.test_file_scraper import TestFileScraper
-
 
 
 class RhinoProject:
@@ -54,28 +55,29 @@ class RhinoProject:
         Scrape project data based on the project type and write project files
         Return an absolute path to the project directory
         """
-        oldcwd = os.getcwd()
+        olddir = os.getcwd()
         os.mkdir(self.project_name)
         os.chdir(self.project_name)
+        newdir = os.getcwd()
         try:
-            if re.match(r'\bhigh\b', self.project_type, flags=re.I):
+            if re.search(r'-high', self.project_type):
                 task_scraper = HighScraper(self.soup)
-            elif re.match(r'\blow\b', self.project_type, flags=re.I):
+            elif re.search(r'-low', self.project_type):
                 task_scraper = LowScraper(self.soup)
-            elif re.match(r'\bsystem\b', self.project_type, flags=re.I):
+            elif re.search(r'-sys', self.project_type):
                 task_scraper = SysScraper(self.soup)
             else:
-                raise ValueError("Project type must be high, low or system")
+                raise ValueError('Invalid project type')
             test_scraper = TestFileScraper(self.soup)
             task_scraper.write_files()
             test_scraper.write_test_files()
             for name in os.listdir():
                 try:
-                    os.chmod(name, st.S_IRWXU | st.S_IRGRP | st.S_IROTH)
+                    os.chmod(name, stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH)
                 except OSError:
                     pass
         except Exception:
-            os.chdir(oldcwd)
+            shutil.rmtree(newdir, ignore_errors=True)
             raise
-        else:
-            os.chdir(oldcwd)
+        finally:
+            os.chdir(olddir)

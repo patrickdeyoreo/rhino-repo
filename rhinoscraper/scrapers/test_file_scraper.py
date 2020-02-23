@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 """Module for TestFileScraper"""
-import os
-import re
 import sys
-import requests
-from bs4 import BeautifulSoup
 
 
 class TestFileScraper:
@@ -29,19 +25,20 @@ class TestFileScraper:
     def write_test_files(self):
         """Write test files
         """
-        sys.stdout.write("  -> Creating test files... ")
+        print("> Writing test files...")
         for item in self.pre:
-            find_test = item.text.find("cat")
             find_c = item.text.find("main.c")
+            find_html = item.text.find(".html")
+            find_js = item.text.find(".js")
             find_py = item.text.find(".py")
             find_sql = item.text.find(".sql")
-            find_js = item.text.find(".js")
-            find_html = item.text.find(".html")
+            find_test = item.text.find("cat")
 
             # find_main checks if there are main files on project page
-            if find_test != -1 and (
-                    find_c != -1 or find_py != -1 or
-                    find_sql != -1 or find_js != -1 or find_html != -1):
+            if find_test != -1 and any([
+                    i != -1 for i in
+                    [find_c, find_html, find_js, find_py, find_sql]
+            ]):
                 try:
                     name = item.text.split("cat ", 1)[1]
                     user = item.text.split("$", 1)[0]
@@ -81,14 +78,12 @@ class TestFileScraper:
                             break
                         if i == "\n":
                             newlines += 1
-                    sys.stdout.write("[ERROR] Could not create ")
-                    sys.stdout.write("test file %s\n" % name)
-                    sys.stdout.write("                        ... ")
+                    print("* [ERROR] Could not create test file", name,
+                          file=sys.stderr)
                     continue
                 except IOError:
-                    sys.stdout.write(
-                        "\n     [ERROR] Could not create a test file.\n")
+                    print("* [ERROR] Could not create a test file",
+                          file=sys.stderr)
                     continue
             else:
                 pass
-        print("done")

@@ -52,7 +52,8 @@ class ReadScraper:
                 return tmp
             raise AttributeError
         except AttributeError:
-            sys.stdout.write("\n[ERROR] Failed to find project directory")
+            print("* [ERROR] Failed to scrape project directory",
+                  file=sys.stderr)
             self.big_project_type = 1
             return ""
 
@@ -63,8 +64,8 @@ class ReadScraper:
             h3 = h2.find_next("h3").next_element.next_element.next_element.text
             return h3.splitlines()
         except AttributeError:
-            print("[ERROR] Failed to scrape learning objectives")
-            sys.stdout.write("                         ... ")
+            print("* [ERROR] Failed to scrape learning objectives",
+                  file=sys.stderr)
             return ""
 
     def find_files(self):
@@ -82,8 +83,8 @@ class ReadScraper:
                     temp.append(file_text)
             return temp
         except (IndexError, AttributeError):
-            print("[ERROR] Failed to scrape file names")
-            sys.stdout.write("                         ... ")
+            print("* [ERROR] Failed to scrape project filenames",
+                  file=sys.stderr)
             return None
 
     def find_tasks(self):
@@ -96,8 +97,8 @@ class ReadScraper:
                 temp.append(item)
             return temp
         except (IndexError, AttributeError):
-            print("[ERROR] Failed to scrape task titles")
-            sys.stdout.write("                         ... ")
+            print("* [ERROR] Failed to scrape task titles",
+                  file=sys.stderr)
             return None
 
     def find_task_de(self):
@@ -112,8 +113,8 @@ class ReadScraper:
                     temp.append(info_text.encode('utf-8'))
             return temp
         except (IndexError, AttributeError):
-            print("[ERROR] Failed to scrape task descriptions")
-            print("                         ... ")
+            print("* [ERROR] Failed to scrape task descriptions",
+                  file=sys.stderr)
             return None
 
     def open_readme(self):
@@ -128,14 +129,13 @@ class ReadScraper:
 
     def write_title(self):
         """Method that writes the title to README.md"""
-        sys.stdout.write("  -> Writing project title... ")
+        print("> Writing project title...")
         self.readme.write("# {}\n".format(self.title))
         self.readme.write("\n")
-        print("done")
 
     def write_info(self):
         """Method that writes project info to README.md"""
-        sys.stdout.write("  -> Writing learning objectives... ")
+        print("> Writing learning objectives...")
         self.readme.write("## Description\n")
         self.readme.write("What you should learn from this project:\n")
         try:
@@ -144,9 +144,9 @@ class ReadScraper:
                     self.readme.write("{}\n".format(item.encode('utf-8')))
                     continue
                 self.readme.write("* {}\n".format(item.encode('utf-8')))
-            print("done")
         except (AttributeError, IndexError, UnicodeEncodeError):
-            print("\n     [ERROR] Failed to write learning objectives.")
+            print("* [ERROR] Failed to write learning objectives",
+                  file=sys.stderr)
         self.readme.write("\n")
         self.readme.write("---\n")
 
@@ -154,7 +154,7 @@ class ReadScraper:
         """Method that writes the entire tasks to README.md"""
         if (self.task_names is not None and self.file_names is not None and
                 self.task_info is not None):
-            sys.stdout.write("  -> Writing task information... ")
+            print("> Writing task information...")
             count = 0
             while count < len(self.task_names):
                 try:
@@ -166,19 +166,17 @@ class ReadScraper:
                     self.readme.write("\n")
                     count += 1
                 except IndexError:
-                    sys.stdout.write("\n     [ERROR] Could not write task {}."
-                                     .format(self.task_names[count]))
+                    print("* [ERROR] Could not write", self.task_names[count],
+                          file=sys.stderr)
                     count += 1
                     continue
-            print("done")
 
     def write_footer(self, author, user, git_link):
         """Method that writes the footer to README.md"""
-        sys.stdout.write("  -> Writing author information... ")
+        print("> Writing author information...")
         self.readme.write("---\n")
         self.readme.write("\n")
         self.readme.write("## Author\n")
         self.readme.write("* **{}** - ".format(author))
         self.readme.write("[{}]".format(user))
         self.readme.write("({})".format(git_link))
-        print("done")

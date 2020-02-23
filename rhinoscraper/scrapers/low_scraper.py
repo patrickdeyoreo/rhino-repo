@@ -3,6 +3,7 @@
 Provides a class for scraping low-level projects
 """
 import re
+import sys
 from bs4 import BeautifulSoup
 
 PUTCHAR = """
@@ -59,44 +60,48 @@ class LowScraper:
         Returns
         """
         print("> Checking if a custom '_putchar' is required...")
-        regex = re.compile(r'^you\s+are\s+allowedn\s+to\s+use\b', flags=re.I)
+        regex = re.compile(r'^you\s+are\s+allowed\s+to\s+use\b', flags=re.I)
         match = self.soup.find(string=regex)
         try:
-            value = len(match) == 23 and match.next_sibling.text == '_putchar'
+            self.putchar_required = match.next_sibling.text == '_putchar'
         except (TypeError, ValueError):
-            value = False
-        self.putchar_required = value
+            self.putchar_required = False
         return self.putchar_required
 
     def scrape_header(self):
         """
         Scrape C header file name
         """
+        print("> Scraping name of header file...")
         try:
-            regex = re.compile(r"\bforget\s+to\s+push\s+your\s+header\s+file\b")
-            match = self.soup.find(string=regex)
-            value = match.previous_element.previous_element.previous_element
+            regex = re.compile(r'\bforget\s+to\s+push\s+your\s+header\s+file')
+            match = self.soup.find(string=regex).previous_element
+            self.header = match.previous_element.previous_element
         except AttributeError:
-            value = None
-        self.header = value
+            self.header = None
         return self.header
 
     def scrape_prototypes(self):
         """
         Scrape C prototypes
         """
-        regex = re.compile(r"\bprototype:\s", flags=re.IGNORECASE)
+        print("> Scraping function prototypes...")
         if self.putchar_required:
             self.prototypes = ['int _putchar(char c)']
         else:
             self.prototypes = []
-        self.prototypes.extend([element.next_sibling.text.replace(";", "") for
+        regex = re.compile(r"\bprototype:\s", flags=re.I)
+        self.prototypes.extend([element.next_sibling.text.replace(';', '') for
                                 element in self.soup.find_all(string=regex)])
         return self.prototypes
 
     def scrape_files(self):
-        """Method to scrape for C file names"""
-        self.files = self.soup.find_all(string=re.compile("File: "))
+        """
+        Scrape C file names
+        """
+        print("> Scraping file names...")
+        regex = re.compile(r'\bfile: ', flags=re.I)
+        self.files = self.soup.find_all(string=regex) or []
         return self.files
 
     def write_putchar(self):
@@ -106,8 +111,8 @@ class LowScraper:
         if self.putchar_required:
             print("> Writing '_putchar.c'...")
             try:
-                with open('_putchar.c', 'w') as ostream:
-                    print(PUTCHAR.strip(), file=ostream)
+                with open('_putchar.c', 'w') as ofile:
+                    print(PUTCHAR.strip(), file=ofile)
             except OSError:
                 pass
 
@@ -116,22 +121,23 @@ class LowScraper:
         Write C header file (if required)
         """
         if self.header:
-            print("> Creating header file... ")
+            print("> Writing header file... ")
             try:
                 include_guard = self.header.replace('.', '_', 1).upper()
                 prototypes = ['{};'.format(s) for s in self.prototypes]
-                with open(self.header, 'w') as ostream:
-                    print('#ifndef {}'.format(include_guard), file=ostream)
-                    print('#define {}'.format(include_guard), file=ostream)
-                    print('', file=ostream)
-                    print('#include <stdio.h>', file=ostream)
-                    print('#include <stdlib.h>', file=ostream)
-                    print('', file=ostream)
-                    print(*prototypes, sep='\n', file=ostream)
-                    print('', file=ostream)
-                    print('#endif /* {} */'.format(include_guard), file=ostream)
+                with open(self.header, 'w') as ofile:
+                    print('#ifndef {}'.format(include_guard), file=ofile)
+                    print('#define {}'.format(include_guard), file=ofile)
+                    print('', file=ofile)
+                    print('#include <stdio.h>', file=ofile)
+                    print('#include <stdlib.h>', file=ofile)
+                    print('', file=ofile)
+                    print(*prototypes, sep='\n', file=ofile)
+                    print('', file=ofile)
+                    print('#endif /* {} */'.format(include_guard), file=ofile)
             except (AttributeError, OSError):
-                print("[ERROR] Failed to create header file")
+                print("* [ERROR] Failed to write header file", self.header,
+                      file=sys.stderr)
 
     def write_files(self):
         """
@@ -140,7 +146,7 @@ class LowScraper:
         """
         self.write_header()
         self.write_putchar()
-        print("> Creating task files...")
+        print("> Writing task files...")
         for element, prototype in zip(self.files, self.prototypes):
             try:
                 filename = element.next_sibling.text.split(",")[0]
@@ -148,20 +154,21 @@ class LowScraper:
                 funcname = funcname[len(funcname)-1].split("*")
                 funcname = funcname[len(funcname)-1]
                 if self.header is not None:
-                    with open(filename, 'w') as ostream:
-                        print('#include', self.header, file=ostream)
-                        print('', file=ostream)
-                        print('/**', file=ostream)
-                        print(' *', funcname, '-', file=ostream)
-                        print(' *', file=ostream)
-                        print(' * Return:', file=ostream)
-                        print(' */', file=ostream)
-                        print(prototype, file=ostream)
-                        print('{', file=ostream)
-                        print('', file=ostream)
-                        print('}', file=ostream)
+                    with open(filename, 'w') as ofile:
+                        print('#include', self.header, file=ofile)
+                        print('', file=ofile)
+                        print('/**', file=ofile)
+                        print(' *', funcname, '-', file=ofile)
+                        print(' *', file=ofile)
+                        print(' * Return:', file=ofile)
+                        print(' */', file=ofile)
+                        print(prototype, file=ofile)
+                        print('{', file=ofile)
+                        print('', file=ofile)
+                        print('}', file=ofile)
             except (AttributeError, OSError):
-                print("[ERROR] Failed to create task file", filename)
+                print("* [ERROR] Failed to write task file", filename,
+                      file=sys.stderr)
 
     def write_checker(self):
         """
@@ -173,8 +180,8 @@ class LowScraper:
                 line.append(self.header)
             if self.files:
                 line.extend([item.next_sibling.text for item in self.files])
-            with open('check.sh', 'w') as ostream:
-                print('#!/usr/bin/env bash', file=ostream)
-                print(*line, file=ostream)
+            with open('check.sh', 'w') as ofile:
+                print('#!/usr/bin/env bash', file=ofile)
+                print(*line, file=ofile)
         except (OSError, TypeError, ValueError):
             pass
