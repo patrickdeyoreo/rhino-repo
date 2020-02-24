@@ -40,13 +40,14 @@ def create_session(hbtn_user, hbtn_pass):
         soup = BeautifulSoup(resp.content, features='html.parser')
         try:
             auth_data = {
-                'user[login]': hbtn_user, 'user[pass]': hbtn_pass,
+                'user[login]': hbtn_user,
+                'user[password]': hbtn_pass,
                 'authenticity_token': soup.find(
                     'input', {'name': 'authenticity_token'}
                 ).get('value'),
                 'commit': soup.find(
                     'input', {'name': 'commit'}
-                ).get('value'),
+                ).get('value')
             }
         except AttributeError:
             pass
