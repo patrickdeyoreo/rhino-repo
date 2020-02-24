@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Provides a class for scraping low-level projects
-"""
+"""Module for LowScraper"""
 import re
 import sys
 from bs4 import BeautifulSoup
@@ -10,10 +8,10 @@ PUTCHAR = """
 #include <unistd.h>
 
 /**
- * _putchar - writes a character to stdout
- * @c: the character to print
+ * _putchar - writes the character c to stdout
+ * @c: The character to print
  *
- * Return: On success, 1 is returned.
+ * Return: On success 1.
  * On error, -1 is returned, and errno is set appropriately.
  */
 int _putchar(char c)
@@ -35,12 +33,12 @@ class LowScraper:
         write_files
 
     Public instance attributes:
-        putchar_required: bool: requires custom '_putchar.c'
-        header: str: C header content
+        putchar_required: bool: is a custom putchar required
+        header: str: name of C header file
         prototypes: list: function prototypes
         files: list: project files
     """
-    def __init__(self, soup: BeautifulSoup):
+    def __init__(self, soup):
         """
         Instantiate a LowScraper with a BeautifulSoup object
         Args:
