@@ -10,10 +10,10 @@ $(document).ready(function () {
         dataType: 'json',
         contentType: 'application/json',
         data: JSON.stringify({
-          hbtn_user: $('#hb_id').val(),
-          hbtn_pass: $('#hb_pwd').val(),
+          hbtn_email: $('#hb_id').val(),
+          hbtn_password: $('#hb_pwd').val(),
           hbtn_api_key: $('#api_id').val(),
-          github_pass: $('#g_pwd').val()
+          github_password: $('#g_pwd').val()
         }),
         success: function (response) {
           window.location.href = "/done/" + response.body;
