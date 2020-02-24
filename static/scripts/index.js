@@ -1,13 +1,12 @@
-$(document).ready(function () {
+$(function () {
   $('.navbar-brand').click(function(){
-    document.location.href = 'index.html'
+    document.location.href = 'index.html';
   });
   $('button.submit').click(function () {
     $.ajax(
       {
         url: `http://0.0.0.0:5000/api/v1/${$('#hb_proj').val()}`,
         type: 'POST',
-        dataType: 'json',
         contentType: 'application/json',
         data: JSON.stringify({
           hbtn_email: $('#hb_id').val(),
