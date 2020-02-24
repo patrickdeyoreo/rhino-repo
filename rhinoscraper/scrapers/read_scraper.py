@@ -110,7 +110,7 @@ class ReadScraper:
             for comments in info_list:
                 if comments == " Task Body ":
                     info_text = comments.next_element.next_element.text
-                    temp.append(info_text.encode('utf-8'))
+                    temp.append(info_text)
             return temp
         except (IndexError, AttributeError):
             print("* [ERROR] Failed to scrape task descriptions",
@@ -141,9 +141,9 @@ class ReadScraper:
         try:
             for item in self.prj_info:
                 if len(item) == 0:
-                    self.readme.write("{}\n".format(item.encode('utf-8')))
+                    self.readme.write("{}\n".format(item))
                     continue
-                self.readme.write("* {}\n".format(item.encode('utf-8')))
+                self.readme.write("* {}\n".format(item))
         except (AttributeError, IndexError, UnicodeEncodeError):
             print("* [ERROR] Failed to write learning objectives",
                   file=sys.stderr)
