@@ -33,7 +33,7 @@ class RhinoProject:
         Scrape the project directory name by locating 'Directory:'
         Return the project directory name
         """
-        pattern = re.compile(r'Directory:', flags=re.I)
+        pattern = re.compile(r'^directory:\s+', flags=re.I)
         element = self.soup.find(string=pattern)
         if element is None:
             raise ValueError('Unable to determine project name')
