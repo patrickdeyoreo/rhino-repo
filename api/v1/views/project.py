@@ -25,7 +25,6 @@ def hbtn_project(project_id):
     hbtn_api_key
     github_password
     """
-    print(flask.request)
     auth = flask.request.get_json()
     if AUTH_KEYS - auth.keys():
         flask.abort(400)
