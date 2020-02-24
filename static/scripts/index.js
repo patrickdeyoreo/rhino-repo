@@ -1,5 +1,5 @@
 $(function () {
-  $('.navbar-brand').click(function(){
+  $('.navbar-brand').click(function () {
     document.location.href = 'index.html';
   });
   $('button.submit').click(function () {
