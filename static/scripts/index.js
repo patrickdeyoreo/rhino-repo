@@ -15,10 +15,10 @@ $(function () {
           github_password: $('#g_pwd').val()
         }),
         success: function (response) {
-          window.location.href = "done.html" + response.body;
+          window.location.href = "/done/" + response.body;
         },
         error: function (error) {
-          window.location.href = "404.html";
+          window.location.href = "/404/";
         }
       }
     );
