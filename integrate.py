@@ -3,7 +3,6 @@
 Flask App that integrates with Rhino-Repo static HTML Template
 """
 from flask import Flask, render_template, url_for
-from flask_cors import CORS
 
 # flask setup
 app = Flask(__name__)

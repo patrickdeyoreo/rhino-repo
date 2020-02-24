@@ -9,17 +9,17 @@ class RhinoRead(ReadScraper):
     """
     Definition of a class to scrape project data and create project files
     """
-    def __init__(self, soup, user, name):
+    def __init__(self, soup, github_user, github_name):
         """
         Instantiate a RhinoRead object
         """
         super().__init__(soup)
-        if not isinstance(user, str):
+        if not isinstance(github_user, str):
             raise TypeError("'user' must be a 'str'")
-        if not isinstance(name, str):
+        if not isinstance(github_name, str):
             raise TypeError("'name' must be a 'str'")
-        self.user = user
-        self.name = name
+        self.user = github_user
+        self.name = github_name
 
     def run(self):
         """

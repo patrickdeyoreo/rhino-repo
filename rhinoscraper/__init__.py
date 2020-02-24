@@ -8,14 +8,14 @@ from . rhinoproject import RhinoProject
 from . rhinoread import RhinoRead
 
 
-def rhinoscrape(soup, github_username, author):
+def rhinoscrape(soup, github_user, github_name):
     """
     Run the rhinoproject and rhinoreadme scrapers
     """
-    rhinoproject = RhinoProject(soup)
-    rhinoread = RhinoRead(soup, github_username, author)
-    rhinoproject.run()
-    rhinoread.run()
+    rhino = RhinoProject(soup)
+    rhino.run()
+    rhino = RhinoRead(soup, github_user, github_name)
+    rhino.run()
 
 
 def get_soup(session, project):
@@ -29,7 +29,7 @@ def get_soup(session, project):
     return None
 
 
-def create_session(hbtn_username, hbtn_password):
+def create_session(hbtn_user, hbtn_pass):
     """
     Log in to intranet.hbtn.io
     Return the login session
@@ -40,8 +40,7 @@ def create_session(hbtn_username, hbtn_password):
         soup = BeautifulSoup(resp.content, features='html.parser')
         try:
             auth_data = {
-                'user[login]': hbtn_username,
-                'user[password]': hbtn_password,
+                'user[login]': hbtn_user, 'user[pass]': hbtn_pass,
                 'authenticity_token': soup.find(
                     'input', {'name': 'authenticity_token'}
                 ).get('value'),
